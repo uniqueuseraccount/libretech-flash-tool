@@ -123,7 +123,14 @@ BOOTLOADER_flash(){
 		return 1
 	fi
 
-	if [ $(stat -c %s $bl) -ne $bl_size ]; then
+	# macOS uses BSD stat (-f %z) instead of GNU stat (-c %s)
+	local _stat_size
+	if stat -c %s "$bl" &>/dev/null 2>&1; then
+		_stat_size=$(stat -c %s "$bl")
+	else
+		_stat_size=$(stat -f %z "$bl")
+	fi
+	if [ $_stat_size -ne $bl_size ]; then
 		echo "$FUNCNAME: BOARD $board bootloader does not match expected size." >&2
 		return 1
 	fi
