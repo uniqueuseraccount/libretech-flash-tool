@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/local/bin/bash
 # SPDX-License-Identifier: MIT
 # Copyright (C) 2022 Da Xue
 

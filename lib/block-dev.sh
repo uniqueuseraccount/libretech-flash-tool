@@ -1,10 +1,10 @@
-#!/usr/bin/env bash
+#!/usr/local/bin/bash
 # SPDX-License-Identifier: GPL-2.0
 # Copyright (C) 2022 Da Xue <da@libre.computer>
 
 BLOCK_DEV_get(){
 	local blk_show_all=${1:-0}
-	local blk_devs=$(lsblk -dn | cut -f 1 -d " ")
+	local blk_devs=$(lsblk -d -n | cut -f 1 -d " ")
 	local blk_dev
 	local blk_part
 	for blk_dev in $blk_devs; do
