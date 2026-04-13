@@ -73,7 +73,7 @@ BLOCK_DEV_isMounted(){
 
 BLOCK_DEV_getInfo(){
 	local dev=$1
-	lsblk -dnyo TRAN,SIZE,VENDOR,MODEL,SERIAL /dev/$dev
+	lsblk -d -n -o TRAN,SIZE,VENDOR,MODEL,SERIAL /dev/$dev
 }
 
 BLOCK_DEV_getPartPrefix(){
