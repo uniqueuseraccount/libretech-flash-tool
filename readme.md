@@ -1,4 +1,5 @@
-# Libre Computer Flash Tool
+# Libre Computer Flash Tool - Modified for MacOS.
+
 ## Objective
 Quickly deploy bootloaders and images to MicroSD or eMMC storage mediums destined for Libre Computer boards.
 
@@ -14,6 +15,23 @@ device you are trying to flash holds important data, back it up before using
 this tool! This is your first and only warning.
 
 ## How to Use
+
+### Pre-requisites
+
+(requires working homebrew installation)
+
+<a href="https://github.com/JakeTrock/gosblk.git"> LSBLK </a>:
+
+```
+brew tap jaketrock/tap https://github.com/JakeTrock/gosblk.git
+brew install jaketrock/tap/lsblk
+```
+LSUSB:
+```
+brew install lsusb
+```
+
+
 ```bash
 git clone https://github.com/libre-computer-project/libretech-flash-tool.git
 cd libretech-flash-tool
