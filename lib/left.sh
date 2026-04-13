@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-2.0
 # Copyright (C) 2022 Da Xue <da@libre.computer>
 
@@ -70,7 +70,12 @@ LEFT_flash(){
 		return 1
 	fi
 
-	local left_flash_cmd="xz -cd $left | dd of=$dev_path bs=1M iflag=fullblock oflag=dsync conv=notrunc status=progress"
+	# macOS dd does not support iflag; omit on Darwin
+	if [[ "$(uname)" == "Darwin" ]]; then
+		local left_flash_cmd="xz -cd $left | dd of=$dev_path bs=1M oflag=dsync conv=notrunc status=progress"
+	else
+		local left_flash_cmd="xz -cd $left | dd of=$dev_path bs=1M iflag=fullblock oflag=dsync conv=notrunc status=progress"
+	fi
 
 	if ! TOOLKIT_isInCaseInsensitive "force" "$@"; then
 		echo "$FUNCNAME: $left_flash_cmd" >&2

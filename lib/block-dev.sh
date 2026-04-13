@@ -10,7 +10,13 @@ BLOCK_DEV_get(){
 	for blk_dev in $blk_devs; do
 		local blk_show=1
 		for blk_part in $(ls /dev/$blk_dev*); do
-			case "$(findmnt -no TARGET $blk_part)" in
+			# macOS: use mount+awk instead of Linux-only findmnt
+			if [[ "$(uname)" == "Darwin" ]]; then
+				local _mnt=$(mount | awk -v dev="$blk_part" '$1==dev {print $3}')
+			else
+				local _mnt=$(findmnt -no TARGET $blk_part)
+			fi
+			case "$_mnt" in
 				"")
 					:
 					;;
@@ -52,7 +58,12 @@ BLOCK_DEV_isMounted(){
 		return 1
 	fi
 	for blk_part in $(ls /dev/$dev*); do
-		local blk_mnt=$(findmnt -no TARGET $blk_part)
+		# macOS: use mount+awk instead of Linux-only findmnt
+		if [[ "$(uname)" == "Darwin" ]]; then
+			local blk_mnt=$(mount | awk -v dev="$blk_part" '$1==dev {print $3}')
+		else
+			local blk_mnt=$(findmnt -no TARGET $blk_part)
+		fi
 		if [ ! -z "$blk_mnt" ]; then
 			return 0
 		fi

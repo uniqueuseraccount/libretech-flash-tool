@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-2.0
 # Copyright (C) 2024 Da Xue <da@libre.computer>
 
@@ -65,7 +65,13 @@ DISTRO_get(){
 	#TODO: direct write to disk with checksum verify if low space
 	wget -O $dist "$url"
 	echo "$FUNCNAME: downloaded $url to $dist."
-	local checksum=$(sha256sum $dist | cut -f 1 -d ' ')
+	local checksum
+	# macOS uses shasum instead of sha256sum
+	if [[ "$(uname)" == "Darwin" ]]; then
+		checksum=$(shasum -a 256 $dist | cut -f 1 -d ' ')
+	else
+		checksum=$(sha256sum $dist | cut -f 1 -d ' ')
+	fi
 	if [ ! -z "$3" ]; then
 		if [ "$checksum" != "$3" ]; then
 			echo "$FUNCNAME: checksum $checksum does not match expected $3"
@@ -221,7 +227,12 @@ DISTRO_flash(){
 		return 1
 	fi
 
-	local dist_flash_cmd="xz -cd $dist | dd of=$dev_path bs=1M iflag=fullblock oflag=dsync conv=notrunc status=progress"
+	# macOS dd does not support iflag; omit on Darwin
+	if [[ "$(uname)" == "Darwin" ]]; then
+		local dist_flash_cmd="xz -cd $dist | dd of=$dev_path bs=1M oflag=dsync conv=notrunc status=progress"
+	else
+		local dist_flash_cmd="xz -cd $dist | dd of=$dev_path bs=1M iflag=fullblock oflag=dsync conv=notrunc status=progress"
+	fi
 
 	if ! TOOLKIT_isInCaseInsensitive "force" "$@"; then
 		echo "$FUNCNAME: COMMAND: $dist_flash_cmd" >&2
@@ -338,7 +349,12 @@ DISTRO_LEFT_flash(){
 		return 1
 	fi
 
-	local left_flash_cmd="xz -cd $left | dd of=$dev_path bs=1M iflag=fullblock oflag=dsync conv=notrunc status=progress"
+	# macOS dd does not support iflag; omit on Darwin
+	if [[ "$(uname)" == "Darwin" ]]; then
+		local left_flash_cmd="xz -cd $left | dd of=$dev_path bs=1M oflag=dsync conv=notrunc status=progress"
+	else
+		local left_flash_cmd="xz -cd $left | dd of=$dev_path bs=1M iflag=fullblock oflag=dsync conv=notrunc status=progress"
+	fi
 
 	if ! TOOLKIT_isInCaseInsensitive "force" "$@"; then
 		echo "$FUNCNAME: $left_flash_cmd" >&2
